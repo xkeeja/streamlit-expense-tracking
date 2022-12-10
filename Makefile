@@ -1,2 +1,2 @@
 streamlit:
-	-@streamlit run finance_app/summary.py
+	-@streamlit run finance_app/Summary.py
