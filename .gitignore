@@ -1,6 +1,6 @@
 .env
 .envrc
 .python-version
-Makefile
 .streamlit/
 .nb_test/
+.DS_Store
