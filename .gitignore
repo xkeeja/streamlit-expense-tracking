@@ -2,5 +2,5 @@
 .envrc
 .python-version
 .streamlit/
-.nb_test/
+nb_test/
 .DS_Store
