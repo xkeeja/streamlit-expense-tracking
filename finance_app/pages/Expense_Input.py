@@ -4,7 +4,7 @@ import pandas as pd
 import gspread
 
 st.set_page_config(
-        page_title='Expense Input',
+        page_title='費用入力',
         layout='wide'
 )
 
@@ -52,14 +52,17 @@ with st.form("my_form", clear_on_submit=True):
    
    # category of expense
    category = st.radio('カテゴリー', (
-           '必需品',
-           '外食費',
+           '生活用品',
+           '食品',
+           '調味料系',
+           '外食',
            '好きなもの',
-           '交通費',
-           '交際費',
-           '医療費',
-           '旅費',
-           'ペット費',
+           '交通',
+           '交際',
+           '医療',
+           '旅行',
+           'ペット',
+           '税金',
            '雑費'
    ))
    
