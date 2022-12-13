@@ -4,16 +4,16 @@ import pandas as pd
 import gspread
 
 st.set_page_config(
-        page_title='費用入力',
+        page_title='費用入力 / Expense Input',
         layout='wide'
 )
 
-st.markdown(''' # 費用入力 ''')
+st.markdown('# 費用入力 / Expense Input')
 
 
 with st.form("my_form", clear_on_submit=True):
    # set date as today
-   d = st.date_input("日にち", datetime.date.today())
+   d = st.date_input("日にち / Date", datetime.date.today())
    
    # calculate day of the week
    dow_idx = d.weekday()
@@ -29,10 +29,10 @@ with st.form("my_form", clear_on_submit=True):
    dow = dow_dict[dow_idx]
    
    # expense amount
-   amt = st.number_input('金額', min_value=0)
+   amt = st.number_input('金額 / Amount', min_value=0)
    
    # payment method
-   pay_method = st.radio('支払方法', (
+   pay_method = st.radio('支払方法 / Payment Method', (
            '現金',
            'ID',
            'クレカ',
@@ -51,7 +51,7 @@ with st.form("my_form", clear_on_submit=True):
 #            ))
    
    # category of expense
-   category = st.radio('カテゴリー', (
+   category = st.radio('カテゴリー / Category', (
            '生活用品',
            '食品',
            '調味料系',
@@ -67,14 +67,14 @@ with st.form("my_form", clear_on_submit=True):
    ))
    
    # memo
-   memo = st.text_input('備考 (任意)', '')
+   memo = st.text_input('備考 (任意) / Memo (Optional)', '')
 
 
    # every form must have a submit button.
-   submitted = st.form_submit_button("確認")
+   submitted = st.form_submit_button("確認 / Submit")
    if submitted:
         success = st.empty()
-        with st.spinner('⏳ 書き込み中...'):
+        with st.spinner('⏳ 書き込み中... / Writing entry...'):
                 # df for new expense entry
                 columns = ['日にち', '曜日', '金額', '支払方法', 'カテゴリー', '備考']
                 exp_input = [str(d), dow, amt, pay_method, category, memo]
@@ -87,4 +87,4 @@ with st.form("my_form", clear_on_submit=True):
                 worksheet = sh.sheet1
                 index = len(worksheet.col_values(1)) + 1
                 worksheet.update(f'A{index}', [exp_input])
-        success.success('経費更新完成しました', icon='✅')
+        success.success('経費更新完成しました / Expenses Updated', icon='✅')
