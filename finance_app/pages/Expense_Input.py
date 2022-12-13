@@ -39,17 +39,6 @@ with st.form("my_form", clear_on_submit=True):
            'ポイント利用',
            ))
    
-#    pay_method = st.radio('支払方法', (
-#            '現金',
-#            'ID',
-#            'クレカ：LINEカード',
-#            'クレカ：エポスカード',
-#            'クレカ：三井ショッピングパーク',
-#            'クレカ：三井住友',
-#            'クレカ：その他',
-#            'ポイント利用',
-#            ))
-   
    # category of expense
    category = st.radio('カテゴリー / Category', (
            '生活用品',
