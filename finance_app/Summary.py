@@ -51,7 +51,7 @@ df_py_sum = df_py.金額.sum()
 
 # current year vs. last year
 a, b = st.columns(2)
-a.metric(f'{y}総金額 / {y} Total', str('¥{:,}'.format(df_y_sum)), str('¥{:,}'.format(df_py_sum - df_y_sum)))
+a.metric(f'{y}総金額 / {y} Total', str('¥{:,}'.format(df_y_sum)), str('{:,}'.format(df_y_sum - df_py_sum)), delta_color='inverse')
 b.metric(f'{y-1}総金額 / {y-1} Total', str('¥{:,}'.format(df_py_sum)))
 
 # graph current year
@@ -82,7 +82,7 @@ else:
 a, b = st.columns(2)
 df_m_sum = df_m.金額.sum()
 df_pm_sum = df_pm.金額.sum()
-a.metric(f'{y}-{m}の総金額', str('{:,}'.format(df_m_sum)), str('{:,}'.format(df_pm_sum - df_m_sum)))
+a.metric(f'{y}-{m}の総金額', str('{:,}'.format(df_m_sum)), str('{:,}'.format(df_m_sum - df_pm_sum)), delta_color='inverse')
 b.metric(df_pm_str, str('{:,}'.format(df_pm_sum)))
 
 # show expense entries of selected month
