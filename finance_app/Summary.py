@@ -78,16 +78,16 @@ df_m = df[(df.日にち.dt.month == m) & (df.日にち.dt.year == y)].sort_value
 # filter df to previous month
 if m == 1:
         df_pm = df[(df.日にち.dt.month == 12) & (df.日にち.dt.year == y-1)]
-        df_pm_str = f'{y-1}-{12}の総金額'
+        df_pm_str = f'{y-1}-{12}の総金額 / {y-1}-{12} Total'
 else:
         df_pm = df[(df.日にち.dt.month == m-1) & (df.日にち.dt.year == y)]
-        df_pm_str = f'{y}-{m-1}の総金額'
+        df_pm_str = f'{y}-{m-1}の総金額 / {y}-{m-1} Total'
 
 # current month vs last month
 a, b = st.columns(2)
 df_m_sum = df_m.金額.sum()
 df_pm_sum = df_pm.金額.sum()
-a.metric(f'{y}-{m}の総金額', str('¥{:,}'.format(df_m_sum)), str('{:,}'.format(df_m_sum - df_pm_sum)), delta_color='inverse')
+a.metric(f'{y}-{m}の総金額 / {y}-{m} Total', str('¥{:,}'.format(df_m_sum)), str('{:,}'.format(df_m_sum - df_pm_sum)), delta_color='inverse')
 b.metric(df_pm_str, str('¥{:,}'.format(df_pm_sum)))
 
 # show expense entries of selected month
