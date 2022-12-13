@@ -87,8 +87,8 @@ else:
 a, b = st.columns(2)
 df_m_sum = df_m.金額.sum()
 df_pm_sum = df_pm.金額.sum()
-a.metric(f'{y}-{m}の総金額', str('{:,}'.format(df_m_sum)), str('{:,}'.format(df_m_sum - df_pm_sum)), delta_color='inverse')
-b.metric(df_pm_str, str('{:,}'.format(df_pm_sum)))
+a.metric(f'{y}-{m}の総金額', str('¥{:,}'.format(df_m_sum)), str('{:,}'.format(df_m_sum - df_pm_sum)), delta_color='inverse')
+b.metric(df_pm_str, str('¥{:,}'.format(df_pm_sum)))
 
 # show expense entries of selected month
 st.markdown(f'### {y}-{m}の経費 / {y}-{m} Expense Entries')
