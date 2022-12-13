@@ -14,11 +14,14 @@ st.markdown('# 経費概要 / Expense Summary')
 # insert line spacer
 st.markdown('***')
 
-# load dataframe from gsheet
+@st.cache(allow_output_mutation=True)
 def load_gsheet():
         gc = gspread.service_account_from_dict(st.secrets.service_account)
         sh = gc.open_by_key(st.secrets.sheet.sheet_key)
         worksheet = sh.sheet1
+        return worksheet
+
+def load_df(worksheet):
         df = pd.DataFrame(worksheet.get_all_records())
         df['日にち'] = pd.to_datetime(df['日にち'])
         return df
@@ -33,7 +36,9 @@ def graph_year(df, cumulative=False):
         return fig
 
 
-df = load_gsheet()
+# load gsheet & df
+worksheet = load_gsheet()
+df = load_df(worksheet)
 
 # current datetime
 now = datetime.date.today()
