@@ -89,25 +89,69 @@ df_m_sum = df_m.金額.sum()
 df_pm_sum = df_pm.金額.sum()
 a.metric(f'{y}-{m}の総金額 / {y}-{m} Total', str('¥{:,}'.format(df_m_sum)), str('{:,}'.format(df_m_sum - df_pm_sum)), delta_color='inverse')
 b.metric(df_pm_str, str('¥{:,}'.format(df_pm_sum)))
+st.markdown('')
+st.markdown('')
 
-# show expense entries of selected month
-st.markdown(f'### {y}-{m}の経費 / {y}-{m} Expense Entries')
-df_m = df[(df.日にち.dt.month == m) & (df.日にち.dt.year == y)].sort_values(by=['日にち'])
+# list of category & payment methods
+cats = [
+        '全て',
+        '生活用品',
+        '食品',
+        '調味料系',
+        '外食',
+        '好きなもの',
+        '交通',
+        '交際',
+        '医療',
+        '旅行',
+        'ペット',
+        '税金',
+        '雑費'
+        ]
+
+pmethods = [
+        '全て',
+        '現金',
+        'ID',
+        'クレカ',
+        'ポイント利用',
+        ]
+
+# drop down selection
+a, b = st.columns(2)
+with a:
+        exp_sel = st.selectbox('カテゴリーを選択してください / Choose category', cats, index=0)
+
+with b:
+        pay_sel = st.selectbox('支払方法を選択してください / Choose payment method', pmethods, index=0)
+
+# filter df to selected categories & payment methods
+if exp_sel != '全て':
+        df_m = df_m[df_m.カテゴリー == exp_sel]
+if pay_sel != '全て':
+        df_m = df_m[df_m.支払方法 == pay_sel]
+
 df_m['日にち'] = df_m['日にち'].dt.date
 df_m.set_index('日にち', inplace=True)
-st.dataframe(df_m.style.format({'金額': '{:,d}'}), use_container_width=True)
-st.markdown('***')
 
 # calculate expenses by category & payment method
 a, b = st.columns(2)
 with a:
         exp_cat = df_m.filter(items=['カテゴリー', '金額']).groupby('カテゴリー').sum().sort_values(by=['金額'], ascending=False)
-        st.markdown('#### カテゴリーごと / By Category')
+        st.markdown('#### カテゴリーごと総金額 / Total by Category')
         for index, row in exp_cat.iterrows():
                 st.write(index + ': '  + str('{:,}'.format(row['金額'])))
 
 with b:
         exp_pay = df_m.filter(items=['支払方法', '金額']).groupby('支払方法').sum().sort_values(by=['金額'], ascending=False)
-        st.markdown('#### 支払方法ごと / By Payment Method')
+        st.markdown('#### 支払方法ごと総金額 / Total by Payment Method')
         for index, row in exp_pay.iterrows():
                 st.write(index + ': ' + str('{:,}'.format(row['金額'])))
+
+# show expense entries dataframe
+st.markdown('')
+st.markdown('')
+st.markdown(f'### {y}-{m}の経費 / {y}-{m} Expense Entries')
+st.dataframe(df_m.style.format({'金額': '{:,d}'}), use_container_width=True)
+
+
