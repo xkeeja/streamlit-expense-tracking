@@ -1,5 +1,6 @@
 import streamlit as st
 import datetime
+from calendar import monthrange
 import pandas as pd
 import gspread
 import plotly.express as px
@@ -14,6 +15,8 @@ st.markdown('# 経費概要 / Expense Summary')
 # insert line spacer
 st.markdown('***')
 
+
+# define functions
 @st.cache(allow_output_mutation=True)
 def load_gsheet():
         gc = gspread.service_account_from_dict(st.secrets.service_account)
@@ -35,18 +38,31 @@ def graph_year(df, cumulative=False):
         fig.update_traces(hovertemplate='%{y}')
         return fig
 
+@st.cache(ttl=60*5)
+def graph_days(df, y, m):
+    _, days = monthrange(y, m)
+    fig = px.bar(x=df.日にち.dt.day, y=df.金額, color=df.カテゴリー, labels={'x': '日 / Day', 'y': '金額 / Amount', 'color': 'カテゴリー / Category'}, custom_data=[df.備考])
+    fig.update_layout(bargap =0.2, yaxis_title='金額 / Amount', )
+    fig.update_xaxes(tickmode='linear', range=[1, days])
+    fig.update_yaxes(tickformat=',d')
+    fig.update_traces(hovertemplate='金額: %{y} <br>備考: %{customdata[0]}')
+    return fig
+
 
 # load gsheet & df
 worksheet = load_gsheet()
 df = load_df(worksheet)
 
+
 # current datetime
 now = datetime.date.today()
+
 
 # choose year
 years = list(set(df.日にち.dt.year))
 years.sort(reverse=True)
 y = st.selectbox('年度を選択してください / Choose year', years, index=0)
+
 
 # filter df to selected year & calculate sum
 df_y = df[df.日にち.dt.year == y]
@@ -54,26 +70,33 @@ df_y_sum = df_y.金額.sum()
 df_py = df[df.日にち.dt.year == y-1]
 df_py_sum = df_py.金額.sum()
 
+
 # current year vs. last year
 a, b = st.columns(2)
 a.metric(f'{y}総金額 / {y} Total', str('¥{:,}'.format(df_y_sum)), str('{:,}'.format(df_y_sum - df_py_sum)), delta_color='inverse')
 b.metric(f'{y-1}総金額 / {y-1} Total', str('¥{:,}'.format(df_py_sum)))
 
+
 # graph current year
 st.plotly_chart(graph_year(df_y, False))
+
 
 # graph cumulative year
 with st.expander('年間累積グラフ / Yearly Cumulative Graph'):
         st.plotly_chart(graph_year(df_y, True))
 
+
 # insert line spacer
 st.markdown('***')
+
 
 # choose month
 m = st.selectbox('月を選択してください / Choose month', list(range(1,13)), index=now.month-1)
 
+
 # filter df to current month
 df_m = df[(df.日にち.dt.month == m) & (df.日にち.dt.year == y)].sort_values(by=['日にち'])
+
 
 # filter df to previous month
 if m == 1:
@@ -83,6 +106,7 @@ else:
         df_pm = df[(df.日にち.dt.month == m-1) & (df.日にち.dt.year == y)]
         df_pm_str = f'{y}-{m-1}の総金額 / {y}-{m-1} Total'
 
+
 # current month vs last month
 a, b = st.columns(2)
 df_m_sum = df_m.金額.sum()
@@ -91,6 +115,11 @@ a.metric(f'{y}-{m}の総金額 / {y}-{m} Total', str('¥{:,}'.format(df_m_sum)),
 b.metric(df_pm_str, str('¥{:,}'.format(df_pm_sum)))
 st.markdown('')
 st.markdown('')
+
+
+# graph expenses by day
+st.plotly_chart(graph_days(df_m, y, m))
+
 
 # list of category & payment methods
 cats = [
@@ -117,6 +146,7 @@ pmethods = [
         'ポイント利用',
         ]
 
+
 # drop down selection
 a, b = st.columns(2)
 with a:
@@ -124,6 +154,7 @@ with a:
 
 with b:
         pay_sel = st.selectbox('支払方法を選択してください / Choose payment method', pmethods, index=0)
+
 
 # filter df to selected categories & payment methods
 if exp_sel != '全て':
@@ -133,6 +164,7 @@ if pay_sel != '全て':
 
 df_m['日にち'] = df_m['日にち'].dt.date
 df_m.set_index('日にち', inplace=True)
+
 
 # calculate expenses by category & payment method
 a, b = st.columns(2)
@@ -148,10 +180,9 @@ with b:
         for index, row in exp_pay.iterrows():
                 st.write(index + ': ' + str('{:,}'.format(row['金額'])))
 
+
 # show expense entries dataframe
 st.markdown('')
 st.markdown('')
 st.markdown(f'### {y}-{m}の経費 / {y}-{m} Expense Entries')
 st.dataframe(df_m.style.format({'金額': '{:,d}'}), use_container_width=True)
-
-
